@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudentScholars Chess Tournament Manager</title>
+  <style>
+    :root {
+      --primary: #471d55;
+      --primary-light: #6d2f80;
+      --primary-dark: #2d1038;
+      --gold: #facc15;
+      --green: #16a34a;
+      --red: #dc2626;
+      --orange: #d97706;
+      --bg: #f6f1f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #efe1f4, var(--bg));
+      color: var(--text);
+      padding: 20px;
+      padding-top: 120px;
+    }
+
+    .container {
+      max-width: 1350px;
+      margin: auto;
+    }
+
+    .floating-brand {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: rgba(255,255,255,0.97);
+      border: 3px solid var(--primary);
+      border-radius: 20px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 22px rgba(71,29,85,0.35);
+    }
+
+    .floating-brand img {
+      width: 62px;
+      height: 62px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: white;
+      padding: 4px;
+    }
+
+    .floating-brand-text {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .floating-round {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 28px;
+      border-radius: 24px;
+      margin-bottom: 22px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(71,29,85,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "♜ ♞ ♝ ♛ ♚ ♟";
+      position: absolute;
+      left: 20px;
+      top: 10px;
+      opacity: 0.12;
+      font-size: 70px;
+      letter-spacing: 12px;
+      white-space: nowrap;
+    }
+
+    .logo-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .school-logo {
+      width: 115px;
+      height: 115px;
+      object-fit: contain;
+      background: white;
+      border-radius: 18px;
+      padding: 8px;
+      box-shadow: 0 5px 16px rgba(0,0,0,0.22);
+    }
+
+    header h1, header p {
+      position: relative;
+      z-index: 1;
+    }
+
+    header h1 {
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #f3e8ff;
+      margin-top: 4px;
+    }
+
+    .made-by {
+      margin-top: 12px;
+      font-weight: bold;
+      color: var(--gold);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 22px;
+      box-shadow: 0 7px 20px rgba(71,29,85,0.11);
+      border: 1px solid rgba(71,29,85,0.12);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-bottom: 14px;
+      color: var(--primary);
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+      color: var(--primary-dark);
+    }
+
+    input, select, button, textarea {
+      width: 100%;
+      padding: 11px;
+      margin: 7px 0;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      background: var(--primary-light);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .success { background: var(--green); }
+    .danger { background: var(--red); }
+    .warning { background: var(--orange); }
+    .dark { background: var(--primary-dark); }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .player-card {
+      background: #fbf7fd;
+      border: 1px solid #eadcf0;
+      border-radius: 18px;
+      padding: 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    .player-card img {
+      width: 82px;
+      height: 82px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--primary);
+      background: white;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-photo {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .remove-x {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--red);
+      font-size: 12px;
+    }
+
+    .round-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 18px;
+      border-radius: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .round-banner strong {
+      color: var(--gold);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .board-window {
+      background: linear-gradient(180deg, #ffffff, #fbf7fd);
+      border: 3px solid #eadcf0;
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 340px;
+      box-shadow: 0 8px 18px rgba(71,29,85,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-window::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(45deg, rgba(71,29,85,0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(71,29,85,0.03) 25%, transparent 25%);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .board-window.finished {
+      border-color: var(--green);
+      background: linear-gradient(180deg, #ecfdf5, #ffffff);
+    }
+
+    .board-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .board-title {
+      background: var(--primary);
+      color: white;
+      padding: 11px;
+      text-align: center;
+      border-radius: 16px;
+      font-size: 19px;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .versus-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .match-player {
+      background: white;
+      border: 1px solid #eadcf0;
+      padding: 12px;
+      border-radius: 18px;
+      text-align: center;
+      min-height: 150px;
+    }
+
+    .match-player img, .match-player .mini-placeholder {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--primary);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      border: 3px solid var(--primary);
+    }
+
+    .match-player-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--primary-dark);
+      word-break: break-word;
+    }
+
+    .vs {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--primary);
+      background: #f3e8ff;
+      padding: 10px;
+      border-radius: 50%;
+    }
+
+    .status-chip {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+      background: #fef3c7;
+      color: #92400e;
+      margin-top: 8px;
+    }
+
+    .status-chip.done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .bye-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .bye-box {
+      background: #fff7ed;
+      border: 2px dashed #fb923c;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      background: #eadcf0;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 20px;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--green));
+      width: 0%;
+      transition: 0.3s;
+    }
+
+    .timer {
+      font-size: 44px;
+      font-weight: bold;
+      text-align: center;
+      margin: 12px 0;
+      color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #fbf7fd;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message {
+      padding: 14px;
+      border-radius: 16px;
+      margin-top: 14px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .message.ready {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .message.waiting {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .podium {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 15px;
+    }
+
+    .podium-card {
+      background: linear-gradient(180deg, #ffffff, #fbf7fd);
+      border: 2px solid #eadcf0;
+      border-radius: 22px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 8px 18px rgba(71,29,85,0.12);
+    }
+
+    .podium-card.first {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, #fffbeb, #ffffff);
+      transform: scale(1.03);
+    }
+
+    .podium-place {
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    .podium-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .certificate {
+      border: 5px double var(--primary);
+      padding: 26px;
+      border-radius: 24px;
+      text-align: center;
+      background: #fffdf5;
+      margin-top: 18px;
+    }
+
+    .certificate .champion-name {
+      font-size: 36px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 15px 0;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--primary);
+      font-weight: bold;
+      margin: 25px 0 5px;
+    }
+
+    @media (max-width: 800px) {
+      body {
+        padding-top: 150px;
+      }
+      .floating-brand {
+        left: 12px;
+        right: 12px;
+        justify-content: center;
+      }
+      header h1 {
+        font-size: 26px;
+      }
+      .versus-row {
+        grid-template-columns: 1fr;
+      }
+      .vs {
+        width: 50px;
+        margin: auto;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding-top: 20px;
+      }
+      button, input, select, textarea, .no-print, .floating-brand {
+        display: none !important;
+      }
+      .card, .board-window, header {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-brand">
+    <img id="floatingLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23471d55' width='100' height='100'/%3E%3Ctext x='50' y='50' font-size='50' fill='white' text-anchor='middle' dominant-baseline='middle'%3E♞%3C/text%3E%3C/svg%3E" alt="School Logo" />
+    <div>
+      <div class="floating-brand-text">StudentScholars<br>Private School</div>
+      <div id="floatingRoundText" class="floating-round">Tournament Ready</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="logo-row">
+        <div class="school-logo" style="background: linear-gradient(135deg, #471d55, #6d2f80); display: flex; align-items: center; justify-content: center; font-size: 50px;">♞</div>
+      </div>
+      <h1>♟️ StudentScholars Chess Tournament Manager</h1>
+      <p>Register players, add photos, choose active boards, run matches, save results, and display winners.</p>
+      <div class="made-by">Made by Surag</div>
+    </header>
+
+    <div class="grid no-print">
+      <div class="card">
+        <h2>1. Tournament Setup</h2>
+        <label>Competition Name</label>
+        <input id="competitionName" value="Chess Competition" oninput="saveData()" />
+
+        <label>Competition Time</label>
+        <input id="competitionTime" value="5:00 PM – 7:00 PM" oninput="saveData()" />
+
+        <label>Number of Active Boards</label>
+        <input id="boardCount" type="number" min="1" max="20" value="3" oninput="saveData()" />
+
+        <label>Round Duration in Minutes</label>
+        <input id="roundMinutes" type="number" min="1" value="15" onchange="resetTimer(); saveData();" />
+
+        <button onclick="generateTournament()">Create Tournament From Registered Players</button>
+        <p class="small">The system will create simultaneous match windows based on the number of active boards.</p>
+      </div>
+
+      <div class="card">
+        <h2>2. Register Player</h2>
+        <label>Player Name</label>
+        <input id="playerName" placeholder="Enter player name" />
+
+        <label>Player Photo</label>
+        <input id="playerPhoto" type="file" accept="image/*" />
+        <button class="dark" onclick="openCamera()">📷 Open Camera</button>
+        <div id="cameraBox" style="display:none; margin-top:10px;">
+          <video id="cameraPreview" autoplay playsinline style="width:100%; border-radius:16px; border:3px solid var(--primary);"></video>
+          <canvas id="photoCanvas" style="display:none;"></canvas>
+          <div class="button-row">
+            <button class="success" onclick="capturePhoto()">Capture Photo</button>
+            <button class="danger" onclick="closeCamera()">Close Camera</button>
+          </div>
+          <p class="small">After capturing, the photo will be attached to this player.</p>
+        </div>
+        <img id="capturedPreview" alt="Captured player photo" style="display:none; width:90px; height:90px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); margin:10px auto;" />
+
+        <button class="success" onclick="registerPlayer()">Register Player</button>
+        <p class="small">You can either upload a photo or open the camera and capture one directly.</p>
+      </div>
+
+
+      <div class="card">
+        <h2>Round Timer</h2>
+        <div id="timerDisplay" class="timer">15:00</div>
+        <div class="button-row">
+          <button class="success" onclick="startTimer()">Start</button>
+          <button class="warning" onclick="pauseTimer()">Pause</button>
+          <button class="danger" onclick="resetTimer()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Registered Players</h2>
+      <div id="playersArea" class="players-grid"></div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Tournament Controls</h2>
+      <div class="button-row">
+        <button id="nextRoundButton" class="success" onclick="goNextRound()">Show Next Set of Matches</button>
+        <button class="warning" onclick="exportTournament()">Save / Export Match Details</button>
+        <button onclick="importButton.click()">Import Saved Tournament</button>
+        <button class="dark" onclick="window.print()">Print Tournament</button>
+        <button class="danger" onclick="resetTournament()">Reset Tournament</button>
+      </div>
+      <input id="importButton" type="file" accept="application/json" style="display:none" onchange="importTournament(event)" />
+      <p class="small">Finish every active board match before moving to the next set. Export creates a JSON file you can save and reopen later.</p>
+    </div>
+
+    <div class="card">
+      <h2>Round Progress</h2>
+      <div id="progressText" class="small">Tournament not created yet.</div>
+      <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Current Match Windows</h2>
+      <div id="currentRoundArea"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Live Standings</h2>
+        <div id="standingsArea"></div>
+      </div>
+
+      <div class="card">
+        <h2>Complete Tournament Schedule</h2>
+        <div id="scheduleArea"></div>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Teacher Notes / Suggestions</h2>
+      <textarea id="teacherNotes" oninput="saveData()" placeholder="Suggestions: announce fair play, keep a helper as scorekeeper, take photo of winners, give small certificates, run tie-break blitz in case of ties, use notation sheets to record games, maintain silence during play."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Final Winners Display</h2>
+      <div id="winnerArea"></div>
+    </div>
+
+    <div class="footer">Made by Surag • StudentScholars Chess Competition</div>
+  </div>
+
+  <script>
+    let players = [];
+    let rounds = [];
+    let currentRoundIndex = 0;
+    let timerSeconds = 15 * 60;
+    let timerInterval = null;
+    let capturedPhotoData = '';
+    let cameraStream = null;
+
+    function makePlayer(name, photo = '') {
+      return {
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        name,
+        photo,
+        points: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        byes: 0,
+        played: []
+      };
+    }
+
+    function getSettings() {
+      return {
+        competitionName: document.getElementById('competitionName').value,
+        competitionTime: document.getElementById('competitionTime').value,
+        boardCount: Number(document.getElementById('boardCount').value) || 1,
+        roundMinutes: Number(document.getElementById('roundMinutes').value) || 15,
+        teacherNotes: document.getElementById('teacherNotes') ? document.getElementById('teacherNotes').value : '',
+        uploadedLogo: localStorage.getItem('uploadedSchoolLogo') || ''
+      };
+    }
+
+    function saveData() {
+      const data = {
+        players,
+        rounds,
+        currentRoundIndex,
+        timerSeconds,
+        settings: getSettings()
+      };
+      localStorage.setItem('suragChessTournament', JSON.stringify(data));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('suragChessTournament');
+      if (!saved) {
+        renderAll();
+        return;
+      }
+
+      try {
+        const data = JSON.parse(saved);
+        players = data.players || [];
+        rounds = data.rounds || [];
+        currentRoundIndex = data.currentRoundIndex || 0;
+        timerSeconds = data.timerSeconds || 15 * 60;
+
+        if (data.settings) {
+          document.getElementById('competitionName').value = data.settings.competitionName || 'Chess Competition';
+          document.getElementById('competitionTime').value = data.settings.competitionTime || '5:00 PM – 7:00 PM';
+          document.getElementById('boardCount').value = data.settings.boardCount || 3;
+          document.getElementById('roundMinutes').value = data.settings.roundMinutes || 15;
+          document.getElementById('teacherNotes').value = data.settings.teacherNotes || '';
+          if (data.settings.uploadedLogo) setLogo(data.settings.uploadedLogo);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      renderAll();
+    }
+
+    function setLogo(src) {
+      const logo = document.getElementById('schoolLogo');
+      const floatingLogo = document.getElementById('floatingLogo');
+      logo.src = src;
+      floatingLogo.src = src;
+      logo.style.display = 'block';
+      floatingLogo.style.display = 'block';
+    }
+
+    function uploadLogo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        localStorage.setItem('uploadedSchoolLogo', e.target.result);
+        setLogo(e.target.result);
+        saveData();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearLogo() {
+      localStorage.removeItem('uploadedSchoolLogo');
+      saveData();
+    }
+
+    async function openCamera() {
+      const cameraBox = document.getElementById('cameraBox');
+      const video = document.getElementById('cameraPreview');
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        video.srcObject = cameraStream;
+        cameraBox.style.display = 'block';
+      } catch (error) {
+        alert('Camera could not be opened. Please allow camera permission or use photo upload instead.');
+      }
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('cameraPreview');
+      const canvas = document.getElementById('photoCanvas');
+      const preview = document.getElementById('capturedPreview');
+      if (!video.videoWidth) return alert('Camera is not ready yet. Try again in a second.');
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      capturedPhotoData = canvas.toDataURL('image/jpeg', 0.9);
+      preview.src = capturedPhotoData;
+      preview.style.display = 'block';
+      closeCamera();
+    }
+
+    function closeCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      document.getElementById('cameraBox').style.display = 'none';
+    }
+
+    function registerPlayer() {
+      const nameInput = document.getElementById('playerName');
+      const photoInput = document.getElementById('playerPhoto');
+      const name = nameInput.value.trim();
+
+      if (!name) return alert('Please enter the player name.');
+      if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        return alert('This player is already registered.');
+      }
+
+      const file = photoInput.files[0];
+      if (capturedPhotoData) {
+        players.push(makePlayer(name, capturedPhotoData));
+        nameInput.value = '';
+        photoInput.value = '';
+        capturedPhotoData = '';
+        document.getElementById('capturedPreview').style.display = 'none';
+        saveData();
+        renderAll();
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          players.push(makePlayer(name, e.target.result));
+          nameInput.value = '';
+          photoInput.value = '';
+          capturedPhotoData = '';
+          document.getElementById('capturedPreview').style.display = 'none';
+          saveData();
+          renderAll();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        players.push(makePlayer(name));
+        nameInput.value = '';
+        saveData();
+        renderAll();
+      }
+    }
+
+    function removePlayer(playerId) {
+      if (!confirm('Remove this player? This will also clear the generated tournament.')) return;
+      players = players.filter(p => p.id !== playerId);
+      rounds = [];
+      currentRoundIndex = 0;
+      resetPlayerScores();
+      saveData();
+      renderAll();
+    }
+
+    function resetPlayerScores() {
+      players.forEach(p => {
+        p.points = 0;
+        p.wins = 0;
+        p.draws = 0;
+        p.losses = 0;
+        p.byes = 0;
+        p.played = [];
+      });
+    }
+
+    function generateTournament() {
+      const boardCount = Number(document.getElementById('boardCount').value) || 1;
+      if (players.length < 2) return alert('Register at least 2 players first.');
+      if (boardCount < 1) return alert('Enter at least 1 active board.');
+
+      if (!confirm('Create a new tournament from the registered players? Existing match results will reset.')) return;
+
+      resetPlayerScores();
+      rounds = createRoundRobinRounds(players.map(p => p.id), boardCount);
+      currentRoundIndex = 0;
+      resetTimer();
+      recalculateScores();
+      saveData();
+      renderAll();
+    }
+
+    function createRoundRobinRounds(playerIds, boardCount) {
+      let ids = [...playerIds];
+      if (ids.length % 2 === 1) ids.push('BYE');
+
+      const totalPlayers = ids.length;
+      const roundsNeeded = totalPlayers - 1;
+      const allRounds = [];
+      let rotation = [...ids];
+
+      for (let roundNum = 1; roundNum <= roundsNeeded; roundNum++) {
+        const pairings = [];
+        const byes = [];
+
+        for (let i = 0; i < totalPlayers / 2; i++) {
+          const a = rotation[i];
+          const b = rotation[totalPlayers - 1 - i];
+
+          if (a === 'BYE') byes.push(b);
+          else if (b === 'BYE') byes.push(a);
+          else {
+            const flip = roundNum % 2 === 0;
+            pairings.push({
+              board: 0,
+              white: flip ? b : a,
+              black: flip ? a : b,
+              result: '',
+              finished: false
+            });
+          }
+        }
+
+        let setNumber = 1;
+        for (let start = 0; start < pairings.length; start += boardCount) {
+          const matches = pairings.slice(start, start + boardCount).map((m, index) => ({
+            ...m,
+            board: index + 1
+          }));
+
+          allRounds.push({
+            round: allRounds.length + 1,
+            originalRound: roundNum,
+            setNumber,
+            matches,
+            byes: start === 0 ? byes : [],
+            time: `Set ${allRounds.length + 1}`
+          });
+          setNumber++;
+        }
+
+        rotation = [rotation[0], rotation[totalPlayers - 1], ...rotation.slice(1, totalPlayers - 1)];
+      }
+
+      return allRounds;
+    }
+
+    function getPlayer(playerId) {
+      return players.find(p => p.id === playerId);
+    }
+
+    function playerName(playerId) {
+      const player = getPlayer(playerId);
+      return player ? player.name : 'Unknown Player';
+    }
+
+    function playerPhotoHtml(playerId, className = 'mini-placeholder') {
+      const player = getPlayer(playerId);
+      if (!player) return `<div class="${className}">?</div>`;
+      if (player.photo) return `<img src="${player.photo}" alt="${player.name}" />`;
+      return `<div class="${className}">${player.name.charAt(0).toUpperCase()}</div>`;
+    }
+
+    function selectResult(matchIndex, value) {
+      rounds[currentRoundIndex].matches[matchIndex].result = value;
+      saveData();
+      renderAll();
+    }
+
+    function finishMatch(matchIndex) {
+      const match = rounds[currentRoundIndex].matches[matchIndex];
+      if (!match.result) return alert('Please select a winner or draw first.');
+      match.finished = true;
+      recalculateScores();
+      saveData();
+      renderAll();
+    }
+
+    function recalculateScores() {
+      resetPlayerScores();
+      rounds.forEach(round => {
+        round.matches.forEach(match => {
+          if (!match.finished) return;
+          const white = getPlayer(match.white);
+          const black = getPlayer(match.black);
+          if (!white || !black) return;
+
+          white.played.push(match.black);
+          black.played.push(match.white);
+
+          if (match.result === 'white') {
+            white.wins++;
+            white.points += 1;
+            black.losses++;
+          } else if (match.result === 'black') {
+            black.wins++;
+            black.points += 1;
+            white.losses++;
+          } else if (match.result === 'draw') {
+            white.draws++;
+            white.points += 0.5;
+            black.draws++;
+            black.points += 0.5;
+          }
+        });
+
+        round.byes.forEach(byePlayerId => {
+          const player = getPlayer(byePlayerId);
+          if (player) {
+            player.byes++;
+            player.points += 1;
+          }
+        });
+      });
+    }
+
+    function goNextRound() {
+      if (!rounds.length) return alert('Generate a tournament first.');
+      if (currentRoundIndex >= rounds.length - 1) return alert('All matches completed!');
+
+      const current = rounds[currentRoundIndex];
+      if (current.matches.some(m => !m.finished)) {
+        return alert('Complete all matches in the current round before advancing.');
+      }
+
+      currentRoundIndex++;
+      resetTimer();
+      saveData();
+      renderAll();
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        saveData();
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert('Time is up!');
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      saveData();
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerSeconds = (Number(document.getElementById('roundMinutes').value) || 15) * 60;
+      updateTimerDisplay();
+      saveData();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      document.getElementById('timerDisplay').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function exportTournament() {
+      const data = {
+        players,
+        rounds,
+        currentRoundIndex,
+        settings: getSettings(),
+        exportDate: new Date().toISOString()
+      };
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `chess-tournament-${new Date().getTime()}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importTournament(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          players = data.players || [];
+          rounds = data.rounds || [];
+          currentRoundIndex = data.currentRoundIndex || 0;
+
+          if (data.settings) {
+            document.getElementById('competitionName').value = data.settings.competitionName || 'Chess Competition';
+            document.getElementById('competitionTime').value = data.settings.competitionTime || '5:00 PM – 7:00 PM';
+            document.getElementById('boardCount').value = data.settings.boardCount || 3;
+            document.getElementById('roundMinutes').value = data.settings.roundMinutes || 15;
+            document.getElementById('teacherNotes').value = data.settings.teacherNotes || '';
+            if (data.settings.uploadedLogo) setLogo(data.settings.uploadedLogo);
+          }
+
+          saveData();
+          renderAll();
+          alert('Tournament imported successfully!');
+        } catch (error) {
+          alert('Error importing tournament: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function resetTournament() {
+      if (!confirm('Reset everything? This will clear all players and matches.')) return;
+      players = [];
+      rounds = [];
+      currentRoundIndex = 0;
+      resetPlayerScores();
+      resetTimer();
+      localStorage.removeItem('suragChessTournament');
+      renderAll();
+    }
+
+    function renderAll() {
+      renderPlayers();
+      renderCurrentRound();
+      renderStandings();
+      renderSchedule();
+      renderProgress();
+      renderWinners();
+      updateTimerDisplay();
+    }
+
+    function renderPlayers() {
+      const area = document.getElementById('playersArea');
+      if (players.length === 0) {
+        area.innerHTML = '<p class="small">No players registered yet.</p>';
+        return;
+      }
+
+      area.innerHTML = players.map((player, index) => `
+        <div class="player-card">
+          ${playerPhotoHtml(player.id, 'placeholder-photo')}
+          <div style="font-weight:bold; font-size:16px;">${player.name}</div>
+          <div class="small">Points: ${player.points}</div>
+          <button class="remove-x" onclick="removePlayer('${player.id}')">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function renderCurrentRound() {
+      const area = document.getElementById('currentRoundArea');
+
+      if (rounds.length === 0) {
+        area.innerHTML = '<p class="small">No tournament created yet.</p>';
+        return;
+      }
+
+      const round = rounds[currentRoundIndex];
+      if (!round) {
+        area.innerHTML = '<p class="message ready">Tournament completed! View the final winners below.</p>';
+        return;
+      }
+
+      let html = `
+        <div class="round-banner">
+          <strong>Round ${round.round} - Set ${round.setNumber} (Original Round ${round.originalRound})</strong>
+          <span>${round.time}</span>
+        </div>
+        <div class="board-grid">
+      `;
+
+      round.matches.forEach((match, index) => {
+        const whitePlayer = getPlayer(match.white);
+        const blackPlayer = getPlayer(match.black);
+        const resultOptions = ['', 'white', 'black', 'draw'];
+        const resultLabels = { 'white': '♚ White', 'black': '♚ Black', 'draw': '½ Draw', '': 'Pending' };
+
+        html += `
+          <div class="board-window ${match.finished ? 'finished' : ''}">
+            <div class="board-content">
+              <div class="board-title">Board ${match.board}</div>
+              <div class="versus-row">
+                <div class="match-player">
+                  ${playerPhotoHtml(match.white)}
+                  <div class="match-player-name">${playerName(match.white)}</div>
+                  <div class="small" style="margin-top:6px;">White</div>
+                </div>
+                <div class="vs">vs</div>
+                <div class="match-player">
+                  ${playerPhotoHtml(match.black)}
+                  <div class="match-player-name">${playerName(match.black)}</div>
+                  <div class="small" style="margin-top:6px;">Black</div>
+                </div>
+              </div>
+              <select onchange="selectResult(${index}, this.value)" ${match.finished ? 'disabled' : ''} style="margin: 10px 0;">
+                ${resultOptions.map(opt => `<option value="${opt}" ${match.result === opt ? 'selected' : ''}>${resultLabels[opt]}</option>`).join('')}
+              </select>
+              <button class="success" onclick="finishMatch(${index})" ${match.finished ? 'disabled' : ''}>Finish Match</button>
+              <div class="status-chip ${match.finished ? 'done' : ''}" style="display:block; text-align:center; margin:10px 0;">
+                ${match.finished ? '✓ Finished' : 'In Progress'}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      if (round.byes.length > 0) {
+        html += `<div class="bye-area">`;
+        round.byes.forEach(byeId => {
+          html += `
+            <div class="bye-box">
+              <div style="font-size:24px; margin-bottom:6px;">🎯</div>
+              <strong>${playerName(byeId)}</strong><br>
+              <small>Has a bye this round</small>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      area.innerHTML = html;
+    }
+
+    function renderStandings() {
+      const area = document.getElementById('standingsArea');
+      if (players.length === 0) {
+        area.innerHTML = '<p class="small">No players registered.</p>';
+        return;
+      }
+
+      const standings = [...players].sort((a, b) => b.points - a.points);
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Points</th>
+              <th>W</th>
+              <th>D</th>
+              <th>L</th>
+              <th>Bye</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      standings.forEach((player, index) => {
+        html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td><strong>${player.name}</strong></td>
+            <td><strong>${player.points}</strong></td>
+            <td>${player.wins}</td>
+            <td>${player.draws}</td>
+            <td>${player.losses}</td>
+            <td>${player.byes}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      area.innerHTML = html;
+    }
+
+    function renderSchedule() {
+      const area = document.getElementById('scheduleArea');
+      if (rounds.length === 0) {
+        area.innerHTML = '<p class="small">No tournament schedule yet.</p>';
+        return;
+      }
+
+      let html = `<table><thead><tr><th>Set</th><th>Round</th><th>White</th><th>Black</th><th>Result</th></tr></thead><tbody>`;
+      rounds.forEach(round => {
+        round.matches.forEach(match => {
+          const resultText = match.result === 'white' ? '1-0' : match.result === 'black' ? '0-1' : match.result === 'draw' ? '½-½' : '—';
+          html += `
+            <tr>
+              <td>${round.round}</td>
+              <td>Board ${match.board}</td>
+              <td>${playerName(match.white)}</td>
+              <td>${playerName(match.black)}</td>
+              <td>${resultText}</td>
+            </tr>
+          `;
+        });
+      });
+      html += `</tbody></table>`;
+      area.innerHTML = html;
+    }
+
+    function renderProgress() {
+      const area = document.getElementById('progressText');
+      const bar = document.getElementById('progressBar');
+
+      if (rounds.length === 0) {
+        area.textContent = 'Tournament not created yet.';
+        bar.style.width = '0%';
+        return;
+      }
+
+      const totalMatches = rounds.reduce((sum, r) => sum + r.matches.length, 0);
+      const finishedMatches = rounds.reduce((sum, r) => sum + r.matches.filter(m => m.finished).length, 0);
+      const percentage = totalMatches > 0 ? (finishedMatches / totalMatches) * 100 : 0;
+
+      area.textContent = `Completed: ${finishedMatches} of ${totalMatches} matches`;
+      bar.style.width = percentage + '%';
+    }
+
+    function renderWinners() {
+      const area = document.getElementById('winnerArea');
+
+      if (currentRoundIndex < rounds.length - 1 || rounds.length === 0) {
+        area.innerHTML = '<p class="small">Tournament not finished yet.</p>';
+        return;
+      }
+
+      const standings = [...players].sort((a, b) => b.points - a.points).slice(0, 3);
+      if (standings.length === 0) {
+        area.innerHTML = '<p class="small">No winners yet.</p>';
+        return;
+      }
+
+      let html = '<div class="podium">';
+      standings.forEach((player, index) => {
+        const medals = ['🥇', '🥈', '🥉'];
+        html += `
+          <div class="podium-card ${index === 0 ? 'first' : ''}">
+            <div class="podium-place">${medals[index]}</div>
+            ${playerPhotoHtml(player.id, 'placeholder-photo')}
+            <div class="podium-name">${player.name}</div>
+            <div class="small">Points: <strong>${player.points}</strong></div>
+            <div class="small">Record: ${player.wins}W - ${player.draws}D - ${player.losses}L</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      if (standings.length > 0) {
+        html += `
+          <div class="certificate">
+            <div style="color: var(--gold); font-size: 28px;">🏆</div>
+            <h2>CHAMPION</h2>
+            <div class="champion-name">${standings[0].name}</div>
+            <p style="margin-top: 10px; color: var(--primary);">StudentScholars Chess Tournament</p>
+            <p style="font-size: 12px; color: var(--muted);">Made by Surag</p>
+          </div>
+        `;
+      }
+
+      area.innerHTML = html;
+    }
+
+    window.addEventListener('load', loadData);
+  </script>
+</body>
+</html>
